@@ -103,6 +103,39 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Movie Poster Images mapping (matching React SPA Unsplash references)
+MOVIE_IMAGES = {
+    "Interstellar": "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=300&q=80",
+    "Inception": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=300&q=80",
+    "The Dark Knight": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80",
+    "Blade Runner 2049": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80",
+    "The Matrix": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=300&q=80",
+    "Avatar: The Way of Water": "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?auto=format&fit=crop&w=300&q=80",
+    "Spirited Away": "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=300&q=80",
+    "Spider-Man: Into the Spider-Verse": "https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&w=300&q=80",
+    "Whiplash": "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=300&q=80",
+    "La La Land": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=300&q=80",
+    "Dune: Part Two": "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=300&q=80",
+    "The Grand Budapest Hotel": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80",
+    "Parasite": "https://images.unsplash.com/photo-1585647347483-22b66260dfff?auto=format&fit=crop&w=300&q=80",
+    "Shutter Island": "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=300&q=80",
+    "Get Out": "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=300&q=80",
+    "The Silence of the Lambs": "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=300&q=80",
+    "Ex Machina": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=300&q=80",
+    "Arrival": "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=300&q=80",
+    "The Prestige": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80",
+    "Your Name.": "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=300&q=80",
+    "Eternal Sunshine of the Spotless Mind": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=300&q=80",
+    "WALL-E": "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=300&q=80",
+    "WALL·E": "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=300&q=80",
+    "Knives Out": "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=300&q=80",
+    "The Conjuring": "https://images.unsplash.com/photo-1505635552518-3448ff116af3?auto=format&fit=crop&w=300&q=80",
+    "Gladiator": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=300&q=80"
+}
+
+def get_movie_image_url(title):
+    return MOVIE_IMAGES.get(title, "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=300&q=80")
+
 # Cache loaded data models
 @st.cache_resource
 def init_engine():
@@ -213,27 +246,24 @@ elif nav_selection == "2. AI Recommender Console":
             st.markdown(f"### Top {limit} Recommendations Similar to *{selected_title}*")
             
             for i, row in recommendations.iterrows():
+                img_url = get_movie_image_url(row['title'])
                 st.markdown(f"""
-                <div class="glass-card glass-card-glow-purple">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div>
-                            <h4 style="margin:0; font-size:1.15rem;">{row['title']}</h4>
-                            <span style="color:#64748b; font-size:0.75rem;">Year: {row['release_year']} | Genres: {row['genres'].replace('|', ', ')}</span>
-                        </div>
-                        <div style="text-align:right;">
-                            <span class="neon-text-purple" style="font-size:0.95rem;">{row['similarity_percentage']}% Match</span>
-                        </div>
-                    </div>
-                    <p style="color:#94a3b8; font-size:0.8rem; margin:10px 0 0 0; line-height:1.4;">{row['description']}</p>
-                    
-                    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <div style="font-size:0.75rem; color:#64748b;">
-                            ⭐ Rating: {row['rating']} | 🔥 Popularity: {row['popularity']}%
-                        </div>
-                        <div style="width:140px;">
-                            <div class="meter-container">
-                                <div class="meter-bar-cyan" style="width:{row['similarity_percentage']}%;"></div>
+                <div class="glass-card glass-card-glow-purple" style="display:flex; gap:16px; align-items:center;">
+                    <img src="{img_url}" style="width: 80px; height: 110px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;" />
+                    <div style="flex:1; min-width:0;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h4 style="margin:0; font-size:1.15rem; overflow:hidden; text-overflow:ellipsis;">{row['title']}</h4>
+                                <span style="color:#64748b; font-size:0.75rem;">Year: {row['release_year']} | Genres: {row['genres'].replace('|', ', ')}</span>
                             </div>
+                            <div style="text-align:right; min-width:80px; flex-shrink: 0;">
+                                <span class="neon-text-purple" style="font-size:0.95rem;">{row['similarity_percentage']}% Match</span>
+                            </div>
+                        </div>
+                        <p style="color:#94a3b8; font-size:0.8rem; margin:8px 0; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">{row['description']}</p>
+                        <div style="display:flex; gap:16px; font-size:0.75rem; color:#64748b;">
+                            <span>⭐ Rating: {row['rating']}</span>
+                            <span>🔥 Popularity: {row['popularity']}%</span>
                         </div>
                     </div>
                 </div>
